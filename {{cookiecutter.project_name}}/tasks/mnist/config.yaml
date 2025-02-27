@@ -1,4 +1,4 @@
-name: fastMRI_UNET_x4
+name: MNIST
 seed: 1234
 track: &track True
 model:
@@ -33,11 +33,9 @@ trainer:
     weight_decay: 0.0
     track: *track
     loss:
-      module_name: src.optimisation.losses
-      class_name: FastMRILoss
+      module_name: torch.nn
+      class_name: L1Loss
       parameters:
-        lambda_l1: 1.0
-        lambda_ssim: 0.1
     metric:
       module_name: torchmetrics.image
       class_name: PeakSignalNoiseRatio

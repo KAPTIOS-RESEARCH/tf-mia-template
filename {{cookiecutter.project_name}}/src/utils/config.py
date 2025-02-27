@@ -1,4 +1,5 @@
-import torch, random, importlib
+import tensorflow as tf
+import random, importlib
 import numpy as np
 import yaml, logging
 
@@ -67,13 +68,9 @@ def set_seed(seed):
     Args:
         seed (int): The seed to set
     """
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = True
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
+    tf.random.set_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
-
 
 def instanciate_module(module_name: str, class_name: str, params: dict = None):
     """Instantiate a module class

@@ -2,9 +2,7 @@ import logging, wandb, os
 from abc import ABC, abstractmethod
 from uuid import uuid4
 from src.utils.config import set_seed, instanciate_module
-from src.utils.device import get_available_device
 from src.core.trainer import BaseTrainer
-from torch import nn
 from datetime import datetime
 
 class AbstractExperiment(ABC):
