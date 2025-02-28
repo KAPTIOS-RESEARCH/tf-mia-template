@@ -46,7 +46,6 @@ class BaseExperiment(AbstractExperiment):
         set_seed(config['seed'])
 
         logging.info('Initialization of the experiment - {}'.format(experiment_name))
-        self.device = get_available_device()
 
         # CORE INIT
         self.model = self.load_model(config['model'])
@@ -56,14 +55,12 @@ class BaseExperiment(AbstractExperiment):
         # LOGGER 
         if self.config['track']:
             wandb.init(project="CompressedUNET", name=experiment_name, config=config, id=date_time, dir=self.log_dir)
-            wandb.watch(self.model)
 
-    def load_model(self, model_config) -> nn.Module:
+    def load_model(self, model_config):
         md_name = model_config['module_name']
         cls_name = model_config['class_name']
         params = model_config['parameters']
         model = instanciate_module(md_name, cls_name, params)
-        model.to(self.device)
         return model
     
     def load_dataloader(self, dataloader_config):
@@ -80,13 +77,13 @@ class BaseExperiment(AbstractExperiment):
             md_name, 
             cls_name, 
             {
-                "device": self.device, 
                 "model": self.model, 
                 "parameters": params,
+                "log_dir": self.log_dir
             }
         ) 
 
     def run_training(self):
         train_dl = self.dataloader.train()
         val_dl = self.dataloader.val()
-        self.trainer.fit(train_dl, val_dl, self.log_dir)
+        self.trainer.fit(train_dl, val_dl)

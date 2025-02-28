@@ -2,45 +2,39 @@ name: MNIST
 seed: 1234
 track: &track True
 model:
-  class_name: VanillaUNet
-  module_name: src.net.models.unet.vanilla
+  class_name: SimpleCNN
+  module_name: src.net.models.simple.cnn
   parameters:
-    in_channels: 1
-    out_channels: 1
-    features: !!python/list [64, 128, 256, 512, 1024]
+    in_shape: !!python/tuple [28, 28, 1]
+    out_channels: 10
 
 dataloader:
-  class_name: KneeMRILoader
-  module_name: src.data.loaders.kneeMRI
+  class_name: MNISTLoader
+  module_name: src.data.loaders.mnist
   parameters:
-    train_data_dir: /home/nvidia/Projects/Datasets/fastmri/singlecoil_train/
-    val_data_dir: /home/nvidia/Projects/Datasets/fastmri/singlecoil_val/
-    input_size: !!python/tuple [256, 256]
-    batch_size: 16
-    num_workers: 8
+    input_size: !!python/tuple [28, 28]
+    batch_size: 64
     debug: False
-    accelerations: !!python/list [4, 4]
-    center_fractions: !!python/list [0.08, 0.04]
 
 trainer:
-  class_name: FastMRITrainer
-  module_name: tasks.fastMRI.trainer
+  class_name: BaseTrainer
+  module_name: src.core.trainer
   parameters:
-    num_epochs: 100
+    num_epochs: 10
     early_stopping_patience: 20
     lr_scheduler: plateau
     lr: 0.00001
     weight_decay: 0.0
     track: *track
     loss:
-      module_name: torch.nn
-      class_name: L1Loss
-      parameters:
+        module_name: tensorflow.keras.losses
+        class_name: SparseCategoricalCrossentropy
+        parameters:
+          from_logits: False
     metric:
-      module_name: torchmetrics.image
-      class_name: PeakSignalNoiseRatio
-      parameters:
-
+        module_name: tensorflow.keras.metrics
+        class_name: SparseCategoricalAccuracy
+        parameters:
 experiment:
   class_name: BaseExperiment
   module_name: src.core.experiment
