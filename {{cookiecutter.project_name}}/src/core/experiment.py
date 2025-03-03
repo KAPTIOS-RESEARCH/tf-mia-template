@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from uuid import uuid4
 from src.utils.config import set_seed, instanciate_module
 from src.core.trainer import BaseTrainer
+from src.core.evaluator import BaseEvaluator
 from datetime import datetime
 
 class AbstractExperiment(ABC):
@@ -82,8 +83,21 @@ class BaseExperiment(AbstractExperiment):
                 "log_dir": self.log_dir
             }
         ) 
+        
+    def load_evaluator(self, evaluator_config) -> BaseEvaluator:
+        md_name = evaluator_config['module_name']
+        cls_name = evaluator_config['class_name']
+        params = evaluator_config['parameters']
+        return instanciate_module(
+            md_name,
+            cls_name,
+            {
+                "model_path": os.path.join(self.log_dir, 'best_model.keras'),
+                "parameters": params,
+            }
+        ) 
 
     def run_training(self):
         train_dl = self.dataloader.train()
         val_dl = self.dataloader.val()
-        self.trainer.fit(train_dl, val_dl)
+        self.trainer.run(train_dl, val_dl)

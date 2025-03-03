@@ -1,7 +1,7 @@
 import wandb, os, logging
 import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, LearningRateScheduler, ModelCheckpoint
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from src.utils.config import instanciate_module
 from wandb.integration.keras import WandbMetricsLogger, WandbModelCheckpoint
 
@@ -29,7 +29,7 @@ class BaseTrainer:
         
         self.model.compile(optimizer=self.optimizer, loss=self.criterion, metrics=[self.metric])
 
-    def fit(self, train_ds, val_ds):
+    def run(self, train_ds, val_ds):
         num_epochs = self.parameters['num_epochs']
         callbacks = [EarlyStopping(monitor='val_loss', patience=self.parameters['early_stopping_patience'], restore_best_weights=True)]
         
